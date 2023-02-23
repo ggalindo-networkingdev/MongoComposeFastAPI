@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    networks:
+      - node-webapp-network
+    ports:
+      - "0.0.0.0::8001:8001"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001
+    links:
+      - mongodb
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    volumes:
+      - mongodb:/data/db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+      - MONGO_INITDB_DATABASE=admin
+    networks:
+      - node-webapp-network
+networks:
+  node-webapp-network:
+    driver: bridge
+volumes:
+  mongodb: 
