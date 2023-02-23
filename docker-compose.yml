@@ -1,6 +1,14 @@
 version: "3.8"
 
 services:
+  vpn:
+    image: gartnera/openconnect
+    environment:
+      - SERVER=devnetsandbox-usw1-reservation.cisco.com:20274
+      - USERNAME=gabriel.ro
+      - PASSWORD=EDQUEECB
+    command: ["openconnect", "-u", "${USERNAME}", "--passwd-on-stdin", "${SERVER}"]
+    stdin_open: true
   app:
     build:
       context: .
@@ -25,6 +33,14 @@ services:
       - MONGO_INITDB_DATABASE=admin
     networks:
       - node-webapp-network
+openconnect:
+  image: vimagick/openconnect
+  command: https://vpn.easypi.info:4443
+  net: host
+  volumes:
+    - ./data:/etc/openconnect
+  stop_signal: SIGINT
+  privileged: yes
 networks:
   node-webapp-network:
     driver: bridge
